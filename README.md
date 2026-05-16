@@ -1,21 +1,34 @@
 # DOT
 
 3D printed 12-DOF quadruped robot. ESP32, MG90S servos.
-
-![DOT v1.0](docs/img/hero.jpg)
-
+<p align="center">
+  <img src="docs/img/hero.jpg" alt="Rock RC car" width="500">
+</p>
 **Status:** v1.0 bring-up. IK works on single legs. Full walking is unreliable, debugging.
+
+---
+
+## Current status
+
+- [x] CAD v1 printed
+- [x] Servo calibration sketch
+- [x] Single-leg IK test
+- [ ] Stable standing pose
+- [ ] Crawl gait
+- [ ] IMU feedback
+- [ ] URDF / Isaac Sim model
 
 ---
 
 ## Repo
 
 - `firmware/dot_calibrate/` — sets every servo to a single angle. Used for assembly and inversion check.
-- `firmware/dot_pose_test/` — commands one leg to a target position via IK.
-- `cad/3mf/` — printable files
-- `cad/step/` — coming later
+- `firmware/dot_ik_test/` — commands one leg to a target position via IK.
+- `CAD/3mf/` — printable files
+- `CAD/step/` — coming later
 - `docs/kinematics.md` — FK + IK derivations
-- `CHANGELOG.md` — dated build log
+- `docs/wiring.md` — wiring reference
+- `docs/calibration.md` — servo zeroing procedure
 
 ---
 
@@ -49,13 +62,13 @@ PLA. Settings embedded in each 3MF (Bambu Studio).
 **Hardware**
 
 - M3 screws
-- M2 heat-set inserts
+- M3 heat-set inserts
 
 ---
 
 ## Wiring
 
-ESP32-S3-Matrix → PCA9685 over I2C. Servos plug into PCA9685 channels 0–11.
+ESP32-S3-Matrix → PCA9685 over I2C. Servos plug into PCA9685 channels 0–11. Full pinout in [docs/wiring.md](docs/wiring.md).
 
 ```
 PCA9685 SDA -> ESP32 GPIO 34
@@ -65,8 +78,7 @@ GND         -> GND
 Servo V+    -> battery shield 5V rail
 ```
 
-Don't power servos off the ESP32's 5V — they'll brown out the board.
-
+Don't power servos off the ESP32's 5V.
 ---
 
 ## Flash
@@ -84,7 +96,7 @@ Board: `ESP32S3 Dev Module`. Upload over USB-C.
 
 ## Assemble
 
-Calibrate before mounting any of the legs. Otherwise the software's 90° won't match the physical 90° and the IK will be off.
+Calibrate before mounting any of the legs. Otherwise the software's 90° won't match the physical 90° and the IK will be off. Full procedure in [docs/calibration.md](docs/calibration.md).
 
 1. Flash `firmware/dot_calibrate/` — sets every servo to the angle defined at the top of the sketch.
 2. Set the angle to 90°, run it, watch all 12 servos.
@@ -92,8 +104,6 @@ Calibrate before mounting any of the legs. Otherwise the software's 90° won't m
 4. Re-run. All servos should now move the right direction for a positive angle change.
 5. With servos still holding 90°, mount the leg parts. Leg link first, then knee link. Tighten the horn screws while the leg is in its neutral pose.
 6. Repeat for all four legs.
-
-Now the software zero matches the physical zero and the IK will mean what it says.
 
 ---
 
@@ -134,4 +144,4 @@ Still to do: Jacobian, workspace analysis, foot trajectories, parameterized gait
 ## License
 
 - Code (`firmware/`): MIT — see [LICENSE](LICENSE)
-- CAD (`cad/`): CC BY-SA 4.0 — see [cad/LICENSE](cad/LICENSE)
+- CAD (`CAD/`): CC BY-SA 4.0 — see [CAD/LICENSE](CAD/LICENSE)

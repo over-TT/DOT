@@ -43,7 +43,8 @@ int servoOffset[NUM_SERVOS] = {
   0, 0, 0, 0
 };
 
-// Extra geometry offsets for upper leg / knee tuning
+// Extra geometry offsets for upper leg and knee tuning.
+// Applied to leg[1] (upper) and leg[2] (knee/foot) in moveLegToXYZ().
 int legGeometryOffset[NUM_SERVOS] = {
   0, 0, 0, 0,
   0, 0, 0, 0,
@@ -79,7 +80,8 @@ IKResult ik(float x, float y, float z, bool left) {
   const float l1 = 5.0f;   // upper leg length
   const float l2 = 5.0f;   // lower leg length
 
-  float yLocal = y;
+  // Mirror Y for the left side so a positive Y always means "outward from the body"
+  float yLocal = left ? -y : y;
 
   // Distance in the Y-Z view
   float r1 = sqrtf(yLocal * yLocal + z * z);
@@ -233,7 +235,7 @@ void moveAllFeetServos(int angle) {
 
 void standPose() {
   moveAllHipServos(110);
-  moveAllLegServos(40);
+  moveAllLegServos(45);
   moveAllFeetServos(90);
 }
 
@@ -256,7 +258,7 @@ void moveLegToXYZ(const int leg[3], float x, float y, float z, bool left) {
 
   int hipTarget  = (int)angles.g;
   int legTarget  = (int)angles.a + legGeometryOffset[leg[1]];
-  int footTarget = (int)angles.t;
+  int footTarget = (int)angles.t + legGeometryOffset[leg[2]];
 
   if (PRINT_IK_DEBUG) {
     Serial.print("RAW IK -> g=");
